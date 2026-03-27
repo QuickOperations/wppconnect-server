@@ -17,7 +17,8 @@
 *.tgz
 *.zip
 /.idea
-userDataDir
+userDataDir/*
+!userDataDir/.gitkeep
 /yarn-error.log
 .yarn/install-state.gz
 backupFolder

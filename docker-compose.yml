@@ -3,16 +3,25 @@ version: '3'
 services:
   wppconnect:
     container_name: wpp-server
+    environment:
+      - NODE_ENV=production
+      - NODE_OPTIONS=--max-old-space-size=2048
+
+    # Límites de recursos para prevenir OOM
     shm_size: '1g'
-    mem_limit: 2g
+    mem_limit: 3g
+    mem_reservation: 1g
+    cpus: 2
+
     restart: unless-stopped
     build:
       context: .
     volumes:
-      - ./config.ts:/usr/src/wpp-server/src/config.ts
+      - ./userDataDir:/usr/src/wpp-server/userDataDir
       - ./wppconnect_tokens:/usr/src/wpp-server/tokens
     ports:
       - '21465:21465'
 
 volumes:
   wppconnect_tokens: {}
+  userDataDir: {}
