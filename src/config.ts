@@ -1,17 +1,19 @@
 import { ServerOptions } from './types/ServerOptions';
+import { environment } from './environment';
 
 export default {
-  secretKey: 'THISISMYSECURETOKEN',
-  host: 'http://localhost',
-  port: '21465',
+  secretKey: environment.SECRET_KEY,
+  host: environment.HOST,
+  port: environment.PORT,
   deviceName: 'WppConnect',
   poweredBy: 'WPPConnect-Server',
-  startAllSession: false,
+  startAllSession: true,
   tokenStoreType: 'file',
   maxListeners: 15,
-  customUserDataDir: './userDataDir/',
+  customUserDataDir: environment.USER_DATA_DIR,
+
   webhook: {
-    url: null,
+    url: environment.WEBHOOK_URL,
     autoDownload: false,
     uploadS3: false,
     readMessage: false,
@@ -26,89 +28,95 @@ export default {
     onSelfMessage: true,
     ignore: ['status@broadcast'],
   },
+
   websocket: {
     autoDownload: false,
     uploadS3: false,
   },
+
   chatwoot: {
     sendQrCode: true,
     sendStatus: true,
   },
+
   archive: {
     enable: false,
     waitTime: 10,
     daysToArchive: 45,
   },
+
   log: {
-    level: 'silly', // Before open a issue, change level to silly and retry a action
+    level: environment.LOG_LEVEL,
     logger: ['console', 'file'],
   },
+
   createOptions: {
+    useChrome: false,
+    executablePath: environment.EXECUTABLE_PATH,
     browserArgs: [
-      '--disable-web-security',
+      // Sandbox (requerido en Docker)
       '--no-sandbox',
-      '--disable-web-security',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+
+      // Rendimiento
+      '--disable-gpu',
+      '--disable-webgl',
+      '--disable-accelerated-2d-canvas',
+
+      // Red y caché
+      '--disable-background-networking',
       '--aggressive-cache-discard',
       '--disable-cache',
       '--disable-application-cache',
-      '--disable-offline-load-stale-cache',
       '--disk-cache-size=0',
-      '--disable-background-networking',
-      '--disable-default-apps',
+
+      // UI innecesaria
       '--disable-extensions',
-      '--disable-sync',
-      '--disable-webgl',
-      '--disable-gpu',
+      '--disable-default-apps',
       '--disable-translate',
+      '--disable-sync',
       '--hide-scrollbars',
-      '--metrics-recording-only',
       '--mute-audio',
       '--no-first-run',
+
+      // Misc
+      '--metrics-recording-only',
       '--safebrowsing-disable-auto-update',
       '--ignore-certificate-errors',
       '--ignore-ssl-errors',
       '--ignore-certificate-errors-spki-list',
     ],
-    /**
-     * Example of configuring the linkPreview generator
-     * If you set this to 'null', it will use global servers; however, you have the option to define your own server
-     * Clone the repository https://github.com/wppconnect-team/wa-js-api-server and host it on your server with ssl
-     *
-     * Configure the attribute as follows:
-     * linkPreviewApiServers: [ 'https://www.yourserver.com/wa-js-api-server' ]
-     */
     linkPreviewApiServers: null,
-
-    /**
-     * Set specific whatsapp version
-     */
-    // whatsappVersion: '2.xxxxx',
   },
+
   mapper: {
     enable: false,
     prefix: 'tagone-',
   },
+
   db: {
-    mongodbDatabase: 'tokens',
-    mongodbCollection: '',
-    mongodbUser: '',
-    mongodbPassword: '',
-    mongodbHost: '',
-    mongoIsRemote: true,
-    mongoURLRemote: '',
-    mongodbPort: 27017,
-    redisHost: 'localhost',
-    redisPort: 6379,
-    redisPassword: '',
-    redisDb: 0,
-    redisPrefix: 'docker',
+    mongodbDatabase: environment.MONGO_DATABASE,
+    mongodbCollection: environment.MONGO_COLLECTION,
+    mongodbUser: environment.MONGO_USER,
+    mongodbPassword: environment.MONGO_PASSWORD,
+    mongodbHost: environment.MONGO_HOST,
+    mongodbPort: environment.MONGO_PORT,
+    mongoIsRemote: environment.MONGO_IS_REMOTE,
+    mongoURLRemote: environment.MONGO_URL_REMOTE,
+    redisHost: environment.REDIS_HOST,
+    redisPort: environment.REDIS_PORT,
+    redisPassword: environment.REDIS_PASSWORD,
+    redisDb: environment.REDIS_DB,
+    redisPrefix: environment.REDIS_PREFIX,
   },
+
   aws_s3: {
-    region: 'sa-east-1' as any,
-    access_key_id: null,
-    secret_key: null,
-    defaultBucketName: null,
-    endpoint: null,
-    forcePathStyle: null,
+    region: environment.AWS_REGION as any,
+    access_key_id: environment.AWS_ACCESS_KEY_ID,
+    secret_key: environment.AWS_SECRET_KEY,
+    defaultBucketName: environment.AWS_BUCKET_NAME,
+    endpoint: environment.AWS_ENDPOINT,
+    forcePathStyle: environment.AWS_FORCE_PATH_STYLE,
   },
 } as unknown as ServerOptions;

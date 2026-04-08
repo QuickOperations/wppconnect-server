@@ -1,49 +1,57 @@
-FROM node:22.22.1-alpine AS base
+# ─── Stage 1: deps ────────────────────────────────────────────────
+FROM node:22-bookworm-slim AS deps
 WORKDIR /usr/src/wpp-server
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
-# Install build dependencies and runtime libraries for sharp
-RUN apk update && \
-    apk add --no-cache \
-    vips \
-    vips-dev \
-    fftw-dev \
-    gcc \
-    g++ \
-    make \
-    libc6-compat \
-    pkgconfig \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libvips-dev \
     python3 \
-    && rm -rf /var/cache/apk/*
+    make \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
 
-# To make sure yarn 4 uses node-modules linker
-COPY .yarnrc.yml ./
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV NODE_ENV=production
 
-# Copy only package.json to leverage Docker cache
-COPY package.json ./
-COPY yarn.lock ./
-
-# Enable corepack and prepare yarn 4.12.0
+COPY .yarnrc.yml package.json yarn.lock ./
 RUN corepack enable && \
-    corepack prepare yarn@4.12.0 --activate
+    corepack prepare yarn@4.12.0 --activate && \
+    yarn install --immutable
 
-# Install dependencies with immutable lockfile
-RUN yarn install --immutable
-
-FROM base AS build
+# ─── Stage 2: build ───────────────────────────────────────────────
+FROM deps AS build
 WORKDIR /usr/src/wpp-server
 COPY . .
-RUN yarn install
 RUN yarn build
 
-FROM build AS runtime
-WORKDIR /usr/src/wpp-server/
+# ─── Stage 3: runtime ─────────────────────────────────────────────
+# ghcr.io/puppeteer/puppeteer provee las dependencias de sistema para Chrome
+FROM ghcr.io/puppeteer/puppeteer:latest AS runtime
+WORKDIR /usr/src/wpp-server
 
-# Install runtime dependencies (chromium and vips libraries)
-RUN apk add --no-cache \
-    chromium \
-    vips \
-    fftw
+USER root
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libvips \
+    fonts-noto-color-emoji \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV NODE_ENV=production
+
+COPY --from=build /usr/src/wpp-server/dist ./dist
+COPY --from=build /usr/src/wpp-server/node_modules ./node_modules
+COPY --from=build /usr/src/wpp-server/package.json ./
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+COPY scripts/install-chrome.js /tmp/install-chrome.js
+
+RUN chown -R pptruser:pptruser /usr/src/wpp-server
+USER pptruser
+
+# Chrome se instala en runtime via docker-entrypoint.sh al primer arranque,
+# guardándose en el named volume `puppeteer-cache` para persistir entre reinicios.
+# No se instala en build time porque el named volume montado en
+# /home/pptruser/.cache/puppeteer sobreescribiría el image layer de todas formas.
 
 EXPOSE 21465
-ENTRYPOINT ["node", "dist/server.js"]
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+CMD ["node", "dist/server.js"]

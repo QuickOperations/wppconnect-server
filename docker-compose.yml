@@ -1,27 +1,43 @@
-version: '3'
-
 services:
   wppconnect:
     container_name: wpp-server
+    env_file:
+      - .env
     environment:
-      - NODE_ENV=production
+      # Limita el heap de Node.js a 2 GB, evitando que el proceso
+      # consuma toda la RAM antes de que el OOM killer del SO actúe.
       - NODE_OPTIONS=--max-old-space-size=2048
-
-    # Límites de recursos para prevenir OOM
+    cap_add:
+      - SYS_ADMIN # ← requerido por la imagen puppeteer oficial
     shm_size: '1g'
     mem_limit: 3g
     mem_reservation: 1g
     cpus: 2
-
     restart: unless-stopped
     build:
       context: .
     volumes:
       - ./userDataDir:/usr/src/wpp-server/userDataDir
       - ./wppconnect_tokens:/usr/src/wpp-server/tokens
+      # Named volume para el cache de Chrome — persiste entre docker compose down/up
+      # sin necesidad de reconstruir la imagen.
+      - puppeteer-cache:/home/pptruser/.cache/puppeteer
     ports:
       - '21465:21465'
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:21465/healthz']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - wpp-net
+
+networks:
+  wpp-net:
+    driver: bridge
 
 volumes:
-  wppconnect_tokens: {}
-  userDataDir: {}
+  # El cache de puppeteer/Chrome vive en un named volume para sobrevivir
+  # docker compose down/up sin necesidad de rebuild de imagen.
+  puppeteer-cache:

@@ -16,6 +16,8 @@
 
 import { Request, Response } from 'express';
 
+import { clientsArray } from '../util/sessionUtil';
+
 export async function healthz(req: Request, res: Response) {
   /**
      #swagger.tags = ["Misc"]
@@ -23,17 +25,45 @@ export async function healthz(req: Request, res: Response) {
      #swagger.description = 'This endpoint can be used to check the health status of the API. It returns a response with a status code indicating the API's health status.'
      }
    */
-  const healthcheck = {
-    uptime: process.uptime(),
-    message: 'OK',
-    timestamp: Date.now(),
-  };
-  try {
-    res.status(200).send(healthcheck);
-  } catch (e: any) {
-    healthcheck.message = e;
-    res.status(503).send();
+  const sessions: Record<string, string> = {};
+  let browserDegraded = false;
+
+  for (const sessionName of Object.keys(clientsArray)) {
+    const client = clientsArray[sessionName as any];
+    if (!client) continue;
+
+    try {
+      const page = (client as any).page;
+      if (!page || page.isClosed()) {
+        sessions[sessionName] = 'browser_crashed';
+        browserDegraded = true;
+      } else {
+        sessions[sessionName] = 'healthy';
+      }
+    } catch {
+      sessions[sessionName] = 'browser_crashed';
+      browserDegraded = true;
+    }
   }
+
+  const response = {
+    uptime: process.uptime(),
+    timestamp: Date.now(),
+    sessions,
+  };
+
+  if (browserDegraded) {
+    res.status(503).send({
+      ...response,
+      message: 'DEGRADED',
+    });
+    return;
+  }
+
+  res.status(200).send({
+    ...response,
+    message: 'OK',
+  });
 }
 
 export async function unhealthy(req: Request, res: Response) {

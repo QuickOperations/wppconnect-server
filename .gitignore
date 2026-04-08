@@ -24,3 +24,4 @@ userDataDir/*
 backupFolder
 tokens/*
 wppconnect_tokens/*
+.claude
