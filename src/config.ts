@@ -5,15 +5,15 @@ export default {
   secretKey: environment.SECRET_KEY,
   host: environment.HOST,
   port: environment.PORT,
-  deviceName: 'WppConnect',
-  poweredBy: 'WPPConnect-Server',
+  deviceName: 'Google Chrome',
+  poweredBy: 'Google Chrome',
   startAllSession: true,
   tokenStoreType: 'file',
   maxListeners: 15,
   customUserDataDir: environment.USER_DATA_DIR,
 
   webhook: {
-    url: environment.WEBHOOK_URL,
+    url: null,
     autoDownload: false,
     uploadS3: false,
     readMessage: false,
