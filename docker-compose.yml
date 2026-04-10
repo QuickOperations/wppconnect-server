@@ -32,10 +32,13 @@ services:
       start_period: 60s
     networks:
       - wpp-net
+      - wpp-server_default
 
 networks:
   wpp-net:
     driver: bridge
+  wpp-server_default:
+    external: true
 
 volumes:
   # El cache de puppeteer/Chrome vive en un named volume para sobrevivir
