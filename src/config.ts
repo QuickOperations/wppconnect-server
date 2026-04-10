@@ -8,7 +8,7 @@ export default {
   deviceName: 'Google Chrome',
   poweredBy: 'Google Chrome',
   startAllSession: true,
-  tokenStoreType: 'file',
+  tokenStoreType: environment.TOKEN_STORE_TYPE,
   maxListeners: 15,
   customUserDataDir: environment.USER_DATA_DIR,
 

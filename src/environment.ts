@@ -4,6 +4,7 @@ const {
   WPP_HOST,
   WPP_PORT,
   NODE_ENV,
+  WPP_TOKEN_STORE_TYPE,
 
   // ─── Browser ──────────────────────────────────────────────────────
   PUPPETEER_EXECUTABLE_PATH,
@@ -42,6 +43,7 @@ const {
 export const environment = {
   // ─── Server ─────────────────────────────────────────────────────
   SECRET_KEY: WPP_SECRET_KEY,
+  TOKEN_STORE_TYPE: WPP_TOKEN_STORE_TYPE ?? 'file',
   HOST: WPP_HOST ?? 'http://localhost',
   PORT: WPP_PORT ?? '21465',
   NODE_ENV: NODE_ENV ?? 'development',
