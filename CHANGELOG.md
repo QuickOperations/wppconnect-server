@@ -1,27 +1,30 @@
+## 2.10.1 (2026-07-30)
+
+
+### Bug Fixes
+
+* bump wppconnect version to 2.2.6 ([#2520](https://github.com/wppconnect-team/wppconnect-server/issues/2520)) ([2755e64](https://github.com/wppconnect-team/wppconnect-server/commit/2755e64f5741320627f65df334eef80d12b4e0a9))
+
+# 2.10.0 (2026-05-16)
+
+# 2.9.0 (2026-03-06)
+
 ## <small>2.8.11 (2026-01-05)</small>
 
-* chore: fixed npm publish ([317b05b](https://github.com/wppconnect-team/wppconnect-server/commit/317b05b))
-
-
+- chore: fixed npm publish ([317b05b](https://github.com/wppconnect-team/wppconnect-server/commit/317b05b))
 
 ## <small>2.8.10 (2025-12-10)</small>
 
-* Merge branch 'main' of github.com:wppconnect-team/wppconnect-server ([39f6934](https://github.com/wppconnect-team/wppconnect-server/commit/39f6934))
-
-
+- Merge branch 'main' of github.com:wppconnect-team/wppconnect-server ([39f6934](https://github.com/wppconnect-team/wppconnect-server/commit/39f6934))
 
 ## <small>2.8.9 (2025-12-10)</small>
 
-* Merge branch 'main' of github.com:wppconnect-team/wppconnect-server ([d42852d](https://github.com/wppconnect-team/wppconnect-server/commit/d42852d))
-
-
+- Merge branch 'main' of github.com:wppconnect-team/wppconnect-server ([d42852d](https://github.com/wppconnect-team/wppconnect-server/commit/d42852d))
 
 ## <small>2.8.8 (2025-12-10)</small>
 
-* docs: Improovment on docs ([7f2b3d3](https://github.com/wppconnect-team/wppconnect-server/commit/7f2b3d3))
-* fix: update yarn cache setup to use Corepack and simplify cache paths ([e6c97e1](https://github.com/wppconnect-team/wppconnect-server/commit/e6c97e1))
-
-
+- docs: Improovment on docs ([7f2b3d3](https://github.com/wppconnect-team/wppconnect-server/commit/7f2b3d3))
+- fix: update yarn cache setup to use Corepack and simplify cache paths ([e6c97e1](https://github.com/wppconnect-team/wppconnect-server/commit/e6c97e1))
 
 ## 2.8.7 (2025-11-25)
 
