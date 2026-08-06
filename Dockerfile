@@ -14,7 +14,7 @@ ENV NODE_ENV=production
 
 COPY .yarnrc.yml package.json yarn.lock ./
 RUN corepack enable && \
-    corepack prepare yarn@4.12.0 --activate && \
+    corepack prepare yarn@4.14.1 --activate && \
     yarn install --immutable
 
 # ─── Stage 2: build ───────────────────────────────────────────────
