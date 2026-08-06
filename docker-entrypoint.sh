@@ -3,6 +3,10 @@ set -e
 
 echo "info: [entrypoint] user=$(id -un) home=$HOME pwd=$PWD"
 
+# Crea userDataDir si no existe. mkdir -p es idempotente: si ya existe
+# no la toca ni borra su contenido (la sesión de WhatsApp persiste).
+mkdir -p /usr/src/wpp-server/userDataDir
+
 CACHE_DIR="$HOME/.cache/puppeteer"
 
 # Find existing Chrome binary in the puppeteer cache
