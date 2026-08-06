@@ -53,6 +53,8 @@ export default {
   createOptions: {
     useChrome: false,
     executablePath: environment.EXECUTABLE_PATH,
+    autoClose: 0,
+    waitForLogin: true,
     browserArgs: [
       // Sandbox (requerido en Docker)
       '--no-sandbox',
