@@ -1,6 +1,7 @@
 services:
   wppconnect:
     container_name: wpp-server
+    init: true
     env_file:
       - .env
     environment:

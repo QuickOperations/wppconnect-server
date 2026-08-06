@@ -35,4 +35,17 @@ fi
 echo "info: [entrypoint] Chrome -> $CHROME_BIN"
 export PUPPETEER_EXECUTABLE_PATH="$CHROME_BIN"
 
+# ─── Limpieza de locks huérfanos de Chrome ────────────────────────
+# El SingletonLock/Socket/Cookie guarda el hostname+PID del contenedor
+# que los creó. Al recrear el contenedor (rebuild, down/up) el hostname
+# cambia y Chrome se niega a abrir el perfil ajeno (Error Code 21).
+# En este punto del arranque ningún Chrome corre todavía, así que
+# borrarlos es seguro: NO toca credenciales ni el vínculo de WhatsApp,
+# solo libera el candado de proceso. El lock se recrea limpio cuando
+# Chrome arranca con el hostname+PID nuevos.
+echo "info: [entrypoint] Limpiando locks huérfanos de Chrome..."
+find /usr/src/wpp-server/userDataDir -name "SingletonLock" -delete 2>/dev/null || true
+find /usr/src/wpp-server/userDataDir -name "SingletonSocket" -delete 2>/dev/null || true
+find /usr/src/wpp-server/userDataDir -name "SingletonCookie" -delete 2>/dev/null || true
+
 exec "$@"
