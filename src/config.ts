@@ -26,7 +26,7 @@ export default {
     onRevokedMessage: false,
     onLabelUpdated: false,
     onSelfMessage: true,
-    ignore: ['status@broadcast'],
+    ignore: ['status@broadcast', 'onupdatelabel'],
   },
 
   websocket: {
@@ -53,8 +53,11 @@ export default {
   createOptions: {
     useChrome: false,
     executablePath: environment.EXECUTABLE_PATH,
-    autoClose: 0,
+    autoClose: 180000,
     waitForLogin: true,
+    puppeteerOptions: {
+      protocolTimeout: 120000,
+    },
     browserArgs: [
       // Sandbox (requerido en Docker)
       '--no-sandbox',
