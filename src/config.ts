@@ -64,6 +64,10 @@ export default {
       '--disable-setuid-sandbox',
       '--disable-dev-shm-usage',
 
+      // Memoria (tope heap V8 por renderer)
+      '--js-flags=--max-old-space-size=1024',
+      '--renderer-process-limit=2',
+
       // Rendimiento
       '--disable-gpu',
       '--disable-webgl',
