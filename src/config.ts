@@ -3,14 +3,6 @@ import { environment } from './environment';
 
 const env = environment;
 
-function envNumber(name: string, fallback: number): number {
-  const value = env[name];
-  if (!value) return fallback;
-
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : fallback;
-}
-
 export default {
   secretKey: env.SECRET_KEY || 'THISISMYSECURETOKEN',
   host: env.HOST || 'http://localhost',
@@ -19,7 +11,7 @@ export default {
   poweredBy: 'Google Chrome',
   startAllSession: true,
   tokenStoreType: env.TOKEN_STORE_TYPE || 'file',
-  maxListeners: envNumber('MAX_LISTENERS', 15),
+  maxListeners: env.MAX_LISTENERS,
   customUserDataDir: env.USER_DATA_DIR || './userDataDir/',
   webhook: {
     url: env.WEBHOOK_URL || null,
@@ -116,19 +108,22 @@ export default {
   },
 
   db: {
-    mongodbDatabase: env.MONGODB_DATABASE || 'tokens',
-    mongodbCollection: env.MONGODB_COLLECTION || '',
-    mongodbUser: env.MONGODB_USER || '',
-    mongodbPassword: env.MONGODB_PASSWORD || '',
-    mongodbHost: env.MONGODB_HOST || '',
-    mongoIsRemote: env.MONGO_IS_REMOTE || true,
-    mongoURLRemote: env.MONGO_URL_REMOTE || '',
-    mongodbPort: envNumber('MONGODB_PORT', 27017),
-    redisHost: env.REDIS_HOST || 'localhost',
-    redisPort: envNumber('REDIS_PORT', 6379),
-    redisPassword: env.REDIS_PASSWORD || '',
-    redisDb: envNumber('REDIS_DB', 0),
-    redisPrefix: env.REDIS_PREFIX || 'docker',
+    // JIC 26.08 BUG #1# Los nombres deben coincidir con los exportados por
+    // src/environment.ts (MONGO_*, no MONGODB_*), si no tsc falla en build.
+    mongodbDatabase: env.MONGO_DATABASE,
+    mongodbCollection: env.MONGO_COLLECTION,
+    mongodbUser: env.MONGO_USER,
+    mongodbPassword: env.MONGO_PASSWORD,
+    mongodbHost: env.MONGO_HOST,
+    // JIC 26.08 BUG #1# `|| true` anulaba el valor: false || true === true.
+    mongoIsRemote: env.MONGO_IS_REMOTE,
+    mongoURLRemote: env.MONGO_URL_REMOTE,
+    mongodbPort: env.MONGO_PORT,
+    redisHost: env.REDIS_HOST,
+    redisPort: env.REDIS_PORT,
+    redisPassword: env.REDIS_PASSWORD,
+    redisDb: env.REDIS_DB,
+    redisPrefix: env.REDIS_PREFIX,
   },
 
   aws_s3: {

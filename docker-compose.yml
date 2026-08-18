@@ -18,17 +18,17 @@ services:
     build:
       context: .
     volumes:
-      - ./config.ts:/usr/src/wpp-server/src/config.ts
-      - ./userDataDir:/usr/src/wpp-server/userDataDir
+      # ATENCION: el target /usr/src/wpp-server/userDataDir estaba declarado dos
+      # veces (bind ./userDataDir + named volume). Compose se queda en silencio
+      # con el ultimo, asi que el bind nunca se montaba. Se deja SOLO el named
+      # volume, que es donde vive hoy la sesion de WhatsApp.
+      - wppconnect_user_data:/usr/src/wpp-server/userDataDir
       - ./wppconnect_tokens:/usr/src/wpp-server/tokens
       # Named volume para el cache de Chrome — persiste entre docker compose down/up
       # sin necesidad de reconstruir la imagen.
       - puppeteer-cache:/home/pptruser/.cache/puppeteer
-      - wppconnect_user_data:/usr/src/wpp-server/userDataDir
       - wppconnect_uploads:/usr/src/wpp-server/uploads
-      # sin necesidad de reconstruir la imagen.
       - wppconnect_images:/usr/src/wpp-server/WhatsAppImages
-      - puppeteer-cache:/home/pptruser/.cache/puppeteer
       - wppconnect_logs:/usr/src/wpp-server/log
     ports:
       - '21465:21465'
@@ -36,7 +36,7 @@ services:
       test:
         [
           'CMD-SHELL',
-          'wget -q --spider http://127.0.0.1:$${PORT:-21465}/healthz || exit 1',
+          'wget -q --spider http://127.0.0.1:$${WPP_PORT:-21465}/healthz || exit 1',
         ]
       interval: 30s
       timeout: 10s
@@ -53,7 +53,6 @@ networks:
     driver: bridge
 
 volumes:
-  wppconnect_tokens: {}
   wppconnect_user_data: {}
   wppconnect_uploads: {}
   wppconnect_images: {}

@@ -5,6 +5,7 @@ const {
   WPP_PORT,
   NODE_ENV,
   WPP_TOKEN_STORE_TYPE,
+  WPP_MAX_LISTENERS,
 
   // ─── Browser ──────────────────────────────────────────────────────
   PUPPETEER_EXECUTABLE_PATH,
@@ -47,6 +48,7 @@ export const environment = {
   HOST: WPP_HOST ?? 'http://localhost',
   PORT: WPP_PORT ?? '21465',
   NODE_ENV: NODE_ENV ?? 'development',
+  MAX_LISTENERS: Number(WPP_MAX_LISTENERS ?? 15),
 
   // ─── Browser ────────────────────────────────────────────────────
   EXECUTABLE_PATH: PUPPETEER_EXECUTABLE_PATH ?? '/usr/bin/google-chrome-stable',
@@ -79,5 +81,5 @@ export const environment = {
   AWS_SECRET_KEY: AWS_SECRET_KEY ?? null,
   AWS_BUCKET_NAME: AWS_BUCKET_NAME ?? null,
   AWS_ENDPOINT: AWS_ENDPOINT ?? null,
-  AWS_FORCE_PATH_STYLE: AWS_FORCE_PATH_STYLE ?? null,
+  AWS_FORCE_PATH_STYLE: AWS_FORCE_PATH_STYLE === 'true',
 } as const;

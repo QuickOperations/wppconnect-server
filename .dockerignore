@@ -1,9 +1,14 @@
 .git
 .github
-.hust
+.husky
 *.tgz
 dist
 log
 node_modules
 npm-debug.log
 tokens
+# Nunca meter secretos ni datos de sesion en el build context
+.env
+.env.*
+userDataDir
+wppconnect_tokens
