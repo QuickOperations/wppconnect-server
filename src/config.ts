@@ -54,9 +54,11 @@ export default {
     useChrome: false,
     executablePath: environment.EXECUTABLE_PATH,
     autoClose: 180000,
+    deviceSyncTimeout: 180000,
     waitForLogin: true,
     puppeteerOptions: {
       protocolTimeout: 120000,
+      dumpio: true,
     },
     browserArgs: [
       // Sandbox (requerido en Docker)
