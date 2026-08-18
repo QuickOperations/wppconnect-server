@@ -1,49 +1,48 @@
 # Admin Function
+@hostname = http://localhost:21465
+@token = Bearer $2b$10$dDB2UD8Fk50.5O1W6NA9geGxuY8GWFZvbOtKTaQKMme29Rpr0xx1i
+@session = personal
+@secretKey = THISISMYSECURETOKEN
 
 ### Genereate Token
-POST http://localhost:21465/api/sessao1/THISISMYSECURETOKEN/generate-token
-
-
-#$2b$10$XyEOmzeVO6Un06EftLYF6unlLOm_DkPkvzRhGxW3gbZHj3vnHhPAO 1
-#$2b$10$JxipHKU0kBVlJ_RRZgKLvOKHm9nGGnlXtWFiJegijYPR1XzMW8HQe 2
-#$2b$10$17q0IXG_.ERu.plsTI6Z8uooFpjyLP5esGWUxwvgQdUNhgyZ6CYnu 3
+POST {{hostname}}/api/{{session}}/{{secretKey}}/generate-token
 
 ###############################################################################################
 
 # Session Function
 
 ### Start Session
-POST http://localhost:21465/api/abner/start-session
+POST {{hostname}}/api/{{session}}/start-session
 Accept: application/json
 Content-Type: application/json
-Authorization: Bearer $2b$10$kLv5a3fM_.q7nPMHfPedeuS_QBHiIdByM.Goy4gsC4qfnGl11nJi2
+Authorization: {{token}}
 
 ### Close Session
-POST http://localhost:21465/api/abner/close-session
+POST {{hostname}}/api/{{session}}/close-session
 Accept: application/json;
 Content-Type: application/json;
-Authorization: Bearer $2b$10$8aQFQxnWREtBEMZK_iHMe.u7NeoNkjL7s6NYai
+Authorization: {{token}}
 
 ###############################################################################################
 
 # Message Functions
 
 ### Send Message
-POST http://localhost:21465/api/abner/send-message
+POST {{hostname}}/api/{{session}}/send-message
 Content-Type:application/json; charset=utf-8
 Accept: application/json
-Authorization: Bearer $2b$10$kLv5a3fM_.q7nPMHfPedeuS_QBHiIdByM.Goy4gsC4qfnGl11nJi2
+Authorization: {{token}}
 
 {
-  "phone": "5511982743910,5511982743910,5511982743910,5511982743910,5511982743910,5511982743910,5511982743910,5511982743910,5511982743910",
+  "phone": "573144885932",
   "message": "*Abner* Rodrigues"
 }
 
 ### Send Image
-POST http://localhost:21465/api/abner/send-image
+POST {{hostname}}/api/{{session}}/send-image
 Content-Type:application/json; charset=utf-8
 Accept: application/json
-Authorization: Bearer $2b$10$8aQFQxnWREtBEMZK_iHMe.u7NeoNkjL7s6NYai_83Pb31Ycss6Igm
+Authorization: {{token}}
 
 {
   "phone": "5511982743910",
@@ -53,10 +52,10 @@ Authorization: Bearer $2b$10$8aQFQxnWREtBEMZK_iHMe.u7NeoNkjL7s6NYai_83Pb31Ycss6I
 }
 
 ### Send File
-POST http://localhost:21465/api/abner/send-file
+POST {{hostname}}/api/{{session}}/send-file
 Content-Type:application/json; charset=utf-8
 Accept: application/json
-Authorization: Bearer $2b$10$8aQFQxnWREtBEMZK_iHMe.u7NeoNkjL7s6NYai_83Pb31Ycss6Igm
+Authorization: {{token}}
 
 {
   "phone": "5511982743910",
@@ -69,10 +68,10 @@ Authorization: Bearer $2b$10$8aQFQxnWREtBEMZK_iHMe.u7NeoNkjL7s6NYai_83Pb31Ycss6I
 # Group Functions
 
 ### Create Group
-POST http://localhost:21465/api/abner/create-group
+POST {{hostname}}/api/{{session}}/create-group
 Content-Type:application/json; charset=utf-8
 Accept: application/json
-Authorization: Bearer $2b$10$8aQFQxnWREtBEMZK_iHMe.u7NeoNkjL7s6NYai_83Pb31Ycss6Igm
+Authorization: {{token}}
 
 {
   "phone": "5511982743910",
@@ -80,10 +79,10 @@ Authorization: Bearer $2b$10$8aQFQxnWREtBEMZK_iHMe.u7NeoNkjL7s6NYai_83Pb31Ycss6I
 }
 
 ### Join Group with InviteCode
-POST http://localhost:21465/api/abner/join-code
+POST {{hostname}}/api/{{session}}/join-code
 Content-Type:application/json; charset=utf-8
 Accept: application/json
-Authorization: Bearer $2b$10$8aQFQxnWREtBEMZK_iHMe.u7NeoNkjL7s6NYai_83Pb31Ycss6Igm
+Authorization: {{token}}
 
 {
   "inviteCode": "Invite Code"
@@ -94,27 +93,27 @@ Authorization: Bearer $2b$10$8aQFQxnWREtBEMZK_iHMe.u7NeoNkjL7s6NYai_83Pb31Ycss6I
 # Device Functions
 
 ### Change Username
-POST http://localhost:21465/api/abner/change-username
+POST {{hostname}}/api/{{session}}/change-username
 Content-Type:application/json; charset=utf-8
 Accept: application/json
-Authorization: Bearer $2b$10$8aQFQxnWREtBEMZK_iHMe.u7NeoNkjL7s6NYai_83Pb31Ycss6Igm
+Authorization: {{token}}
 
 {
   "name": "New Username"
 }
 
 ### Change Profile Image
-POST http://localhost:21465/api/abner/change-profile-image
+POST {{hostname}}/api/{{session}}/change-profile-image
 Content-Type:application/json; charset=utf-8
 Accept: application/json
-Authorization: Bearer $2b$10$8aQFQxnWREtBEMZK_iHMe.u7NeoNkjL7s6NYai_83Pb31Ycss6Igm
+Authorization: {{token}}
 
 {
   "path": "C:\\path\\image.png"
 }
 
 ### Change Profile Image
-GET http://localhost:21465/api/abner/show-all-contacts
+GET {{hostname}}/api/{{session}}/show-all-contacts
 Content-Type:application/json; charset=utf-8
 Accept: application/json
-Authorization: Bearer $2b$10$8aQFQxnWREtBEMZK_iHMe.u7NeoNkjL7s6NYai_83Pb31Ycss6Igm
+Authorization: {{token}}
