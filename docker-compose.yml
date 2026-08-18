@@ -39,7 +39,7 @@ networks:
   wpp-net:
     driver: bridge
   wpp-server_default:
-    external: bridge
+    driver: bridge
 
 volumes:
   # El cache de puppeteer/Chrome vive en un named volume para sobrevivir
