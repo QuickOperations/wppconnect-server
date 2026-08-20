@@ -12,6 +12,7 @@ services:
       - SYS_ADMIN # ← requerido por la imagen puppeteer oficial
     shm_size: '1g'
     mem_limit: 3g
+    memswap_limit: 4g
     mem_reservation: 1g
     cpus: 2
     restart: unless-stopped
