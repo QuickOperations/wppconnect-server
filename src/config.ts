@@ -53,12 +53,12 @@ export default {
   createOptions: {
     useChrome: false,
     executablePath: environment.EXECUTABLE_PATH,
-    autoClose: 180000,
-    deviceSyncTimeout: 180000,
+    autoClose: 0,
+    deviceSyncTimeout: 0,
     waitForLogin: true,
     puppeteerOptions: {
       protocolTimeout: 120000,
-      dumpio: true,
+      dumpio: false,
     },
     browserArgs: [
       // Sandbox (requerido en Docker)
@@ -68,7 +68,8 @@ export default {
 
       // Memoria (tope heap V8 por renderer)
       '--js-flags=--max-old-space-size=1024',
-      '--renderer-process-limit=2',
+      '--renderer-process-limit=4',
+      '--disable-features=site-per-process',
 
       // Rendimiento
       '--disable-gpu',
