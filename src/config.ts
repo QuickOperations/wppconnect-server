@@ -53,8 +53,8 @@ export default {
   createOptions: {
     useChrome: false,
     executablePath: environment.EXECUTABLE_PATH,
-    autoClose: 0,
-    deviceSyncTimeout: 0,
+    autoClose: 180000,
+    deviceSyncTimeout: 180000,
     waitForLogin: true,
     puppeteerOptions: {
       protocolTimeout: 120000,
