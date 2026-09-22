@@ -5,13 +5,13 @@ services:
     env_file:
       - .env
     environment:
-      # Limita el heap de Node.js a 2 GB, evitando que el proceso
-      # consuma toda la RAM antes de que el OOM killer del SO actúe.
-      - NODE_OPTIONS=--max-old-space-size=2048
+      # JIC 26.09 BUG #incidente-2026-09-22# Heap de Node.js limitado a 1 GB.
+      - NODE_OPTIONS=--max-old-space-size=1024
     cap_add:
       - SYS_ADMIN # ← requerido por la imagen puppeteer oficial
     shm_size: '1g'
-    mem_limit: 3g
+    # JIC 26.09 BUG #incidente-2026-09-22# memswap_limit DEBE ser igual a mem_limit
+    mem_limit: 4g
     memswap_limit: 4g
     mem_reservation: 1g
     cpus: 2
