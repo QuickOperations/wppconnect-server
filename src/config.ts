@@ -54,8 +54,8 @@ export default {
   createOptions: {
     useChrome: false,
     executablePath: environment.EXECUTABLE_PATH,
-    autoClose: 180000,
-    deviceSyncTimeout: 180000,
+    autoClose: 86400000,
+    deviceSyncTimeout: 86400000,
     waitForLogin: true,
     puppeteerOptions: {
       protocolTimeout: 120000,
@@ -68,7 +68,8 @@ export default {
       '--disable-dev-shm-usage',
 
       // Memoria (tope heap V8 por renderer)
-      '--js-flags=--max-old-space-size=1024',
+      // incidente-2026-09-22: heap medido 309 MB a las 8 h (~40 MB/h), 1536 da margen hasta el restart nocturno
+      '--js-flags=--max-old-space-size=1536',
       '--renderer-process-limit=2',
 
       // Rendimiento
@@ -77,11 +78,12 @@ export default {
       '--disable-accelerated-2d-canvas',
 
       // Red y caché
+      // incidente-2026-09-22: --disable-cache y --disable-application-cache no existen en Chrome 148,
+      // y --disk-cache-size=0 significa "tamaño por defecto" (el perfil tenía 513 MB de Cache).
+      // --aggressive-cache-discard se mantiene para medirlo en un cambio aparte.
       '--disable-background-networking',
       '--aggressive-cache-discard',
-      '--disable-cache',
-      '--disable-application-cache',
-      '--disk-cache-size=0',
+      '--disk-cache-size=104857600',
 
       // UI innecesaria
       '--disable-extensions',
