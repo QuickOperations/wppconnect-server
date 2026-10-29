@@ -5733,10 +5733,10 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@wppconnect/wa-js@npm:^4.4.3":
-  version: 4.4.3
-  resolution: "@wppconnect/wa-js@npm:4.4.3"
-  checksum: 10c0/5784d2ef045a0c663522a77d22c024bbd4ed1920f497b1100cd36457eb821ed783f09808bebd4ae64ab6b911547bd1819c527fb8161594c8c6bc0ccbfa500fc2
+"@wppconnect/wa-js@npm:4.7.1":
+  version: 4.7.1
+  resolution: "@wppconnect/wa-js@npm:4.7.1"
+  checksum: 10c0/f5eaf99bd17397f3d8a495d2ad65352e632db66bbc4a0a7cdc8fff0a2614ebc29cf901774643ac8faa45e33c34d3070cbded8d1dbfc4e6736f59356a03cd245f
   languageName: node
   linkType: hard
 

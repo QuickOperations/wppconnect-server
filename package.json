@@ -121,5 +121,9 @@
     "crypto-js": "^4.2.0",
     "mongoose": "^8.23.0",
     "redis": "^4.7.1"
+  },
+  "//": "JIC 2026.10 REQ: resolutions fija @wppconnect/wa-js en 4.7.1 aunque @wppconnect-team/wppconnect pida otra version. Al actualizar wppconnect (>=2.3.5 ya trae ^4.7.1) quitar este bloque, si no wa-js queda congelado y obsoleto.",
+  "resolutions": {
+    "@wppconnect/wa-js": "4.7.1"
   }
 }
