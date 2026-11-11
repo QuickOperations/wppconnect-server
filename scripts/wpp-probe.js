@@ -1,4 +1,5 @@
-// Usage: node wpp-probe.js <session> [seconds]
+// Usage: node wpp-probe.js <session> [seconds] [activate]
+// With activate, a hidden WhatsApp page that already has wa-js is brought to front through /json/activate.
 // Samples every 10s the WhatsApp pages of a session through CDP and prints wa-js state and console errors.
 const fs = require('fs');
 const http = require('http');
@@ -6,6 +7,7 @@ let WS;
 try { WS = require('ws'); } catch (e) { WS = globalThis.WebSocket; }
 const session = process.argv[2];
 const total = parseInt(process.argv[3] || '600', 10);
+const activate = process.argv[4] === 'activate';
 const portFile = '/usr/src/wpp-server/userDataDir/' + session + '/DevToolsActivePort';
 const EXPR = '(() => { const w = window.WPP; const base = {rs: document.readyState, vis: document.visibilityState, focus: document.hasFocus(), wpp: typeof w, inj: !!(w && w.isInjected), ready: !!(w && w.isReady), full: !!(w && w.isFullReady), wapi: typeof window.WAPI, store: typeof window.Store, ver: (window.Debug && window.Debug.VERSION) || null, title: document.title}; return new Promise((resolve) => { const t0 = performance.now(); const timer = setTimeout(() => { base.raf = "NO DISPARA en 3s"; resolve(JSON.stringify(base)); }, 3000); requestAnimationFrame(() => { clearTimeout(timer); base.raf = Math.round(performance.now() - t0) + "ms"; resolve(JSON.stringify(base)); }); }); })()';
 const conns = new Map();
@@ -80,13 +82,17 @@ async function tick() {
     if (!conns.has(t.id)) attach(t);
     const r = await evalPage(conns.get(t.id) || { open: false });
     log('  [' + t.id.slice(0, 6) + '] ' + r);
+    if (activate && r.includes('"vis":"hidden"') && r.includes('"wpp":"object"')) {
+      await getJson(port, '/json/activate/' + t.id);
+      log('  [' + t.id.slice(0, 6) + '] ACTIVADA (traida al frente)');
+    }
   }
 }
 (async () => {
   const end = Date.now() + total * 1000;
   while (Date.now() < end) {
     await tick();
-    await new Promise((r) => setTimeout(r, 10000));
+    await new Promise((r) => setTimeout(r, activate ? 4000 : 10000));
   }
   process.exit(0);
 })();
