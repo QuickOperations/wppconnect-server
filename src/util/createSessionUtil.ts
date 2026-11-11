@@ -20,6 +20,7 @@ import path from 'path';
 import { download } from '../controller/sessionController';
 import { emitManager } from '../manager/socket';
 import { WhatsAppServer } from '../types/WhatsAppServer';
+import { keepWhatsAppTabVisible } from './browserTabActivator';
 import chatWootClient from './chatWootClient';
 import { autoDownload, callWebHook, startHelper } from './functions';
 import { tryBeginSessionStart } from './sessionMaintenance';
@@ -77,6 +78,7 @@ export default class CreateSessionUtil {
     // close or publish pairing data for the replacement.
     client = clientsArray[session] = { ...client };
     let initializedClient: typeof client;
+    let stopTabActivator = () => {};
     const ownsAttempt = () =>
       clientsArray[session] === client &&
       !['CLOSED', 'CLOSING', 'ERROR'].includes(client.status);
@@ -103,6 +105,13 @@ export default class CreateSessionUtil {
             session
           ),
         };
+        // The library polls for wa-js on animation frames, which a hidden tab
+        // never fires: keep the WhatsApp tab in front until create() settles.
+        stopTabActivator = keepWhatsAppTabVisible(
+          path.resolve(req.serverOptions.customUserDataDir, session),
+          session,
+          req.logger
+        );
       }
 
       const wppClient = await create(
@@ -192,7 +201,7 @@ export default class CreateSessionUtil {
             },
           }
         )
-      );
+      ).finally(() => stopTabActivator());
 
       initializedClient = wppClient;
 
