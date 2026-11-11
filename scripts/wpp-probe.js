@@ -7,7 +7,7 @@ try { WS = require('ws'); } catch (e) { WS = globalThis.WebSocket; }
 const session = process.argv[2];
 const total = parseInt(process.argv[3] || '600', 10);
 const portFile = '/usr/src/wpp-server/userDataDir/' + session + '/DevToolsActivePort';
-const EXPR = '(() => { const w = window.WPP; return JSON.stringify({rs: document.readyState, wpp: typeof w, inj: !!(w && w.isInjected), ready: !!(w && w.isReady), full: !!(w && w.isFullReady), wapi: typeof window.WAPI, ver: (window.Debug && window.Debug.VERSION) || null, req: typeof window.require, title: document.title}); })()';
+const EXPR = '(() => { const w = window.WPP; const base = {rs: document.readyState, vis: document.visibilityState, focus: document.hasFocus(), wpp: typeof w, inj: !!(w && w.isInjected), ready: !!(w && w.isReady), full: !!(w && w.isFullReady), wapi: typeof window.WAPI, store: typeof window.Store, ver: (window.Debug && window.Debug.VERSION) || null, title: document.title}; return new Promise((resolve) => { const t0 = performance.now(); const timer = setTimeout(() => { base.raf = "NO DISPARA en 3s"; resolve(JSON.stringify(base)); }, 3000); requestAnimationFrame(() => { clearTimeout(timer); base.raf = Math.round(performance.now() - t0) + "ms"; resolve(JSON.stringify(base)); }); }); })()';
 const conns = new Map();
 const seen = new Set();
 const ts = () => new Date().toISOString().slice(11, 19);
@@ -59,13 +59,13 @@ function evalPage(c) {
   return new Promise((resolve) => {
     if (!c.open) return resolve('conectando');
     const id = ++c.n;
-    const timer = setTimeout(() => { c.pending.delete(id); resolve('EVAL SIN RESPUESTA (renderer colgado)'); }, 5000);
+    const timer = setTimeout(() => { c.pending.delete(id); resolve('EVAL SIN RESPUESTA (renderer colgado)'); }, 8000);
     c.pending.set(id, (m) => {
       clearTimeout(timer);
       const r = m.result && m.result.result;
       resolve(r && r.value ? r.value : JSON.stringify(m.error || (m.result && m.result.exceptionDetails && m.result.exceptionDetails.text) || m).slice(0, 200));
     });
-    try { c.ws.send(JSON.stringify({ id, method: 'Runtime.evaluate', params: { expression: EXPR, returnByValue: true } })); } catch (e) { clearTimeout(timer); resolve('ws cerrado'); }
+    try { c.ws.send(JSON.stringify({ id, method: 'Runtime.evaluate', params: { expression: EXPR, returnByValue: true, awaitPromise: true } })); } catch (e) { clearTimeout(timer); resolve('ws cerrado'); }
   });
 }
 async function tick() {
@@ -75,7 +75,7 @@ async function tick() {
   if (!list) { log('sin navegador (puerto ' + port + ')'); return; }
   const pages = list.filter((t) => t.type === 'page');
   const wa = pages.filter((t) => (t.url || '').startsWith('https://web.whatsapp.com'));
-  log('puerto ' + port + ' paginas=' + pages.length + ' whatsapp=' + wa.length);
+  log('puerto ' + port + ' paginas=' + pages.length + ' whatsapp=' + wa.length + ' otras=' + pages.filter((t) => !wa.includes(t)).map((t) => (t.url || '').slice(0, 40)).join(','));
   for (const t of wa) {
     if (!conns.has(t.id)) attach(t);
     const r = await evalPage(conns.get(t.id) || { open: false });
