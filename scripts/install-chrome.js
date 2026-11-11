@@ -6,6 +6,7 @@
  * the globally installed `puppeteer` CLI, which may be a different version
  * (e.g., the one bundled in the ghcr.io/puppeteer/puppeteer base image).
  */
+const fs = require('fs');
 const path = require('path');
 const os = require('os');
 
