@@ -14,6 +14,7 @@ export default {
 
   webhook: {
     url: null,
+    allowedUrls: environment.WEBHOOK_ALLOWED_URLS,
     autoDownload: false,
     uploadS3: false,
     readMessage: false,

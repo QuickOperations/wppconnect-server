@@ -13,6 +13,7 @@ const {
 
   // ─── Webhook ──────────────────────────────────────────────────────
   WPP_WEBHOOK_URL,
+  WPP_WEBHOOK_ALLOWED_URLS,
 
   // ─── MongoDB ──────────────────────────────────────────────────────
   MONGO_DATABASE,
@@ -55,6 +56,11 @@ export const environment = {
 
   // ─── Webhook ────────────────────────────────────────────────────
   WEBHOOK_URL: WPP_WEBHOOK_URL ?? null,
+  // URLs de webhook permitidas por sesion, separadas por coma
+  WEBHOOK_ALLOWED_URLS: (WPP_WEBHOOK_ALLOWED_URLS ?? '')
+    .split(',')
+    .map((url) => url.trim())
+    .filter(Boolean),
 
   // ─── MongoDB ────────────────────────────────────────────────────
   MONGO_DATABASE: MONGO_DATABASE ?? 'tokens',

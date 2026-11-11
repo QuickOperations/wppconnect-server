@@ -2,8 +2,16 @@
 .github
 .hust
 *.tgz
+!vendor/deepmerge-4.3.2+wppconnect.1.tgz
+!vendor/wppconnect-minimatch-legacy-compat-*.tgz
 dist
 log
 node_modules
 npm-debug.log
 tokens
+graphify-out
+manager
+
+.env
+.env.*
+!.env.example

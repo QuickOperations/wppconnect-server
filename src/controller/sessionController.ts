@@ -17,17 +17,29 @@ import { Message, Whatsapp } from '@wppconnect-team/wppconnect';
 import { Request, Response } from 'express';
 import fs from 'fs';
 import mime from 'mime-types';
+import path from 'path';
 import QRCode from 'qrcode';
 import { Logger } from 'winston';
 
 import { version } from '../../package.json';
 import config from '../config';
+import { hasAdminSecret } from '../util/adminSecret';
 import CreateSessionUtil from '../util/createSessionUtil';
 import { callWebHook, contactToArray } from '../util/functions';
 import getAllTokens from '../util/getAllTokens';
-import { clientsArray, deleteSessionOnArray } from '../util/sessionUtil';
+import { isSessionMaintenanceActive } from '../util/sessionMaintenance';
+import { cleanupSession, clientsArray } from '../util/sessionUtil';
 
 const SessionUtil = new CreateSessionUtil();
+
+function rejectStartDuringMaintenance(res: Response): boolean {
+  if (!isSessionMaintenanceActive()) return false;
+  res.status(503).json({
+    status: false,
+    message: 'Session backup or restore is in progress. Try again later.',
+  });
+  return true;
+}
 
 async function downloadFileFunction(
   message: Message,
@@ -122,19 +134,21 @@ export async function startAllSessions(
   let tokenDecrypt = '';
 
   if (secretkey === undefined) {
-    tokenDecrypt = (token as any).split(' ')[0];
+    tokenDecrypt = token?.split(' ')[0] ?? '';
   } else {
     tokenDecrypt = secretkey;
   }
 
-  const allSessions = await getAllTokens(req);
-
   if (tokenDecrypt !== req.serverOptions.secretKey) {
-    res.status(400).json({
+    return res.status(400).json({
       response: 'error',
       message: 'The token is incorrect',
     });
   }
+
+  if (rejectStartDuringMaintenance(res)) return;
+  const allSessions = await getAllTokens(req);
+  if (rejectStartDuringMaintenance(res)) return;
 
   allSessions.map(async (session: string) => {
     const util = new CreateSessionUtil();
@@ -156,36 +170,17 @@ export async function showAllSessions(
      #swagger.operationId = 'showAllSessions'
      #swagger.autoQuery=false
      #swagger.autoHeaders=false
-     #swagger.security = [{
-            "bearerAuth": []
-     }]
-     #swagger.parameters["secretkey"] = {
-      schema: 'THISISMYSECURETOKEN'
+     #swagger.security = []
+     #swagger.parameters["x-secret-key"] = {
+      in: 'header', required: true, type: 'string'
      }
    */
-  const { secretkey } = req.params;
-  const { authorization: token } = req.headers;
-
-  let tokenDecrypt: any = '';
-
-  if (secretkey === undefined) {
-    tokenDecrypt = token?.split(' ')[0];
-  } else {
-    tokenDecrypt = secretkey;
-  }
-
-  const arr: any = [];
-
-  if (tokenDecrypt !== req.serverOptions.secretKey) {
-    res.status(400).json({
+  if (!hasAdminSecret(req, req.serverOptions.secretKey)) {
+    return res.status(400).json({
       response: false,
       message: 'The token is incorrect',
     });
   }
-
-  Object.keys(clientsArray).forEach((item) => {
-    arr.push({ session: item });
-  });
 
   res.status(200).json({ response: await getAllTokens(req) });
 }
@@ -236,6 +231,7 @@ export async function startSession(req: Request, res: Response): Promise<any> {
   const session = req.session;
   const { waitQrCode = false } = req.body;
 
+  if (rejectStartDuringMaintenance(res)) return;
   await getSessionState(req, res);
   await SessionUtil.opendata(req, session, waitQrCode ? res : null);
 }
@@ -254,14 +250,16 @@ export async function closeSession(req: Request, res: Response): Promise<any> {
    */
   const session = req.session;
   try {
-    if ((clientsArray as any)[session].status === null) {
+    if ((clientsArray as any)[session]?.status === null) {
       return await res
         .status(200)
         .json({ status: true, message: 'Session successfully closed' });
     } else {
-      (clientsArray as any)[session] = { status: null };
-
-      await req.client.close();
+      await cleanupSession(session, async (client) => {
+        if (typeof client?.close === 'function') {
+          await client.close();
+        }
+      });
       req.io.emit('whatsapp-status', false);
       callWebHook(req.client, req, 'closesession', {
         message: `Session: ${session} disconnected`,
@@ -295,12 +293,26 @@ export async function logOutSession(req: Request, res: Response): Promise<any> {
    */
   try {
     const session = req.session;
-    await req.client.logout();
-    deleteSessionOnArray(req.session);
-
-    setTimeout(async () => {
-      const pathUserData = config.customUserDataDir + req.session;
-      const pathTokens = __dirname + `../../../tokens/${req.session}.data.json`;
+    if (!/^[A-Za-z0-9_-]+$/.test(session)) {
+      return res
+        .status(400)
+        .json({ status: false, message: 'Invalid session name' });
+    }
+    await cleanupSession(session, async (client) => {
+      const userDataRoot = path.resolve(config.customUserDataDir);
+      const tokenRoot = path.resolve(process.cwd(), 'tokens');
+      const pathUserData = path.resolve(userDataRoot, session);
+      const pathTokens = path.resolve(tokenRoot, `${session}.data.json`);
+      if (
+        !pathUserData.startsWith(path.join(userDataRoot, path.sep)) ||
+        !pathTokens.startsWith(path.join(tokenRoot, path.sep))
+      ) {
+        throw new Error('Invalid session path');
+      }
+      if (typeof client?.logout === 'function') {
+        await client.logout();
+      }
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       if (fs.existsSync(pathUserData)) {
         await fs.promises.rm(pathUserData, {
@@ -318,20 +330,15 @@ export async function logOutSession(req: Request, res: Response): Promise<any> {
           retryDelay: 1000,
         });
       }
-
-      req.io.emit('whatsapp-status', false);
-      callWebHook(req.client, req, 'logoutsession', {
-        message: `Session: ${session} logged out`,
-        connected: false,
-      });
-
-      return await res
-        .status(200)
-        .json({ status: true, message: 'Session successfully closed' });
-    }, 500);
-    /*try {
-      await req.client.close();
-    } catch (error) {}*/
+    });
+    req.io.emit('whatsapp-status', false);
+    callWebHook(req.client, req, 'logoutsession', {
+      message: `Session: ${session} logged out`,
+      connected: false,
+    });
+    return res
+      .status(200)
+      .json({ status: true, message: 'Session successfully closed' });
   } catch (error) {
     req.logger.error(error);
     res
@@ -405,13 +412,13 @@ export async function downloadMediaByMessage(req: Request, res: Response) {
     }
 
     if (!message)
-      res.status(400).json({
+      return res.status(400).json({
         status: 'error',
         message: 'Message not found',
       });
 
     if (!(message['mimetype'] || message.isMedia || message.isMMS))
-      res.status(400).json({
+      return res.status(400).json({
         status: 'error',
         message: 'Message does not contain media',
       });
@@ -453,13 +460,13 @@ export async function getMediaByMessage(req: Request, res: Response) {
     const message = await client.getMessageById(messageId);
 
     if (!message)
-      res.status(400).json({
+      return res.status(400).json({
         status: 'error',
         message: 'Message not found',
       });
 
     if (!(message['mimetype'] || message.isMedia || message.isMMS))
-      res.status(400).json({
+      return res.status(400).json({
         status: 'error',
         message: 'Message does not contain media',
       });

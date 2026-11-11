@@ -1,321 +1,119 @@
-# WPPConnect Team
+**English** | [Português (Brasil)](./README.pt-BR.md)
 
-## _WPPConnect Server_
+<p align="center">
+  <a href="https://wppconnect.io/">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://wppconnect-team.github.io/brand/v2/wppconnect-dark.png" />
+      <img src="https://wppconnect-team.github.io/brand/v2/wppconnect-light.png" alt="WPPConnect" width="220" height="121" />
+    </picture>
+  </a>
+</p>
 
-![WPPConnect-SERVER](https://i.imgur.com/y1ts6RR.png)
+# WPPConnect Server
 
-[![npm version](https://img.shields.io/npm/v/@wppconnect/server.svg?color=green)](https://www.npmjs.com/package/@wppconnect/server)
-[![Downloads](https://img.shields.io/npm/dm/@wppconnect/server.svg)](https://www.npmjs.com/package/@wppconnect/server)
-[![Average time to resolve an issue](https://isitmaintained.com/badge/resolution/wppconnect-team/wppconnect-server.svg)](https://isitmaintained.com/project/wppconnect-team/wppconnect-server 'Average time to resolve an issue')
-[![Percentage of issues still open](https://isitmaintained.com/badge/open/wppconnect-team/wppconnect-server.svg)](https://isitmaintained.com/badge/open/wppconnect-team/wppconnect-server.svg 'Percentage of issues still open')
-[![Build Status](https://img.shields.io/github/actions/workflow/status/wppconnect-team/wppconnect-server/build.yml)](https://github.com/wppconnect-team/wppconnect-server/actions)
-[![Build](https://github.com/wppconnect-team/wppconnect-server/actions/workflows/build.yml/badge.svg)](https://github.com/wppconnect-team/wppconnect-server/actions/workflows/build.yml)
-[![release-it](https://img.shields.io/badge/%F0%9F%93%A6%F0%9F%9A%80-release--it-e10079.svg)](https://github.com/release-it/release-it)
+Run a REST API for WhatsApp sessions, messages and webhooks.
 
-Welcome to the **WPPConnect Server** repository, developed by the WPPConnect Team. Our mission is to provide a robust and ready-to-use API for seamless communication with WhatsApp. The server is designed to streamline the process of sending and receiving messages, managing contacts, creating groups, and much more, all while leveraging the power of JavaScript ES6, NodeJS, and a RESTful architecture.
+A project in the WPPConnect ecosystem, maintained by WPPConnect Team.
 
-- Javascript ES6
-- NodeJS
-- Restfull
+[Getting started](#getting-started) | [Documentation](#documentation) | [Contributing](#contributing) | [Support WPPConnect](#support-the-project)
 
-## Our online channels
+[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue)](./LICENSE) [![npm version](https://img.shields.io/npm/v/@wppconnect/server)](https://www.npmjs.com/package/@wppconnect/server) [![CI](https://github.com/wppconnect-team/wppconnect-server/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/wppconnect-team/wppconnect-server/actions/workflows/build.yml) [![Open Collective](https://img.shields.io/badge/Open%20Collective-WPPConnect-blue)](https://opencollective.com/wppconnect)
 
-Connect with us across various platforms to stay updated and engage in discussions:
+## Overview
 
-[![Discord](https://img.shields.io/discord/844351092758413353?color=blueviolet&label=Discord&logo=discord&style=flat)](https://discord.gg/JU5JGGKGNG)
-[![Telegram Group](https://img.shields.io/badge/Telegram-Group-32AFED?logo=telegram)](https://t.me/wppconnect)
-[![WhatsApp Group](https://img.shields.io/badge/WhatsApp-Group-25D366?logo=whatsapp)](https://chat.whatsapp.com/LJaQu6ZyNvnBPNAVRbX00K)
-[![YouTube](https://img.shields.io/youtube/channel/subscribers/UCD7J9LG08PmGQrF5IS7Yv9A?label=YouTube)](https://www.youtube.com/c/wppconnect)
-
-## Documentations
-
-Detailed documentation and guides are available for your convenience:
-
-- [Postman](https://documenter.getpostman.com/view/9139457/TzshF4jQ)
-- [Swagger](https://wppconnect.io/swagger/wppconnect-server)
-- Swagger UI can be accessed on your server through the route: "IP:PORT/api-docs"
+For integrators who want an HTTP service around the WPPConnect Node.js library. The Docker image also includes WPPConnect Manager for session and chat administration.
 
 ## Features
 
-|                                      |     |
-| ------------------------------------ | --- |
-| Multiple Sessions                    | ✔   |
-| Send **text, image, video and docs** | ✔   |
-| Get **contacts list**                | ✔   |
-| Manage products                      | ✔   |
-| Receive/Send messages                | ✔   |
-| Open/Close Session                   | ✔   |
-| Change Profile/Username              | ✔   |
-| Create Group                         | ✔   |
-| Join Group by Invite Code            | ✔   |
-| Webhook                              | ✔   |
+- Session pairing, text/media messaging, contacts, groups and product operations.
+- Session tokens, webhooks, authenticated Manager events and Swagger UI.
+- Persistent Docker volumes for credentials, browser data, media and logs.
 
-## Libraries Used
+## Getting started
 
-- WPPConnect
-- Axios
-- Bcrypt
-- Cors
-- Dotenv
-- Express
-- Nodemon
-- SocketIO
-- S3
-
-## Installation
-
-Install the dependencies and start the server.
+Use Docker with Compose, or Node.js **22.22.2**, Corepack/Yarn **4.14.1**, Chromium and native dependencies for source development. From the repository root:
 
 ```sh
-yarn install
-//or
-npm install
+cp .env.example .env
 ```
 
-## Install puppeteer dependencies:
+In PowerShell use `Copy-Item .env.example .env`. Edit `.env` and set a private random `SECRET_KEY` before starting.
 
 ```sh
-sudo apt-get install -y libxshmfence-dev libgbm-dev wget unzip fontconfig locales gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils libvips-dev
-
+docker compose up -d
+docker compose ps
+curl -fsS http://localhost:21465/healthz
 ```
 
-## Install google chrome
+Open `http://localhost:21465/manager/` and sign in with the configured `SECRET_KEY` to create/pair a session, or use the API at `http://localhost:21465/api-docs`. Session-restricted Manager access uses a session name and token. For source development: `corepack enable`, `yarn install --immutable`, `yarn build`, then `yarn start`.
 
-```sh
+## Configuration
 
-wget -c https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+[.env.example](.env.example) lists supported environment variables; [src/config.ts](src/config.ts) contains advanced options. Process environment overrides the optional working-directory `.env`, then built-in defaults apply. Restart after changes. Set exact webhook/Chatwoot destinations in `WEBHOOK_ALLOWED_URLS` and `CHATWOOT_ALLOWED_URLS`. Session inventory and backups use POST with `x-secret-key`; legacy GET URLs containing secrets return 410. `MANAGER_ENABLED=false` disables the UI. Preserve the named volumes and pin `WPP_SERVER_TAG` for repeatable deployments.
 
-sudo apt-get update
+## Documentation
 
-sudo apt-get install libappindicator1
+- [Swagger reference](https://wppconnect.io/swagger/wppconnect-server/)
+- [Manager configuration, access and rollback](./docs/manager.md)
+- [HTTP request examples](./requests.http)
+- [Postman collection](https://documenter.getpostman.com/view/9139457/TzshF4jQ)
+- [Retained technical details and acknowledgments](documentation/readme-reference.md)
 
-sudo dpkg -i google-chrome-stable_current_amd64.deb
+## WPPConnect ecosystem
 
-```
+| Project | Purpose | When to use it |
+| --- | --- | --- |
+| [WPPConnect](https://github.com/wppconnect-team/wppconnect) | Control WhatsApp Web from Node.js applications. | Embed automation in a Node.js application. |
+| [WPPConnect Manager](https://github.com/wppconnect-team/wppconnect-manager) | Manage WPPConnect Server sessions and conversations in a self-hosted web workspace. | Operate compatible Server sessions and chats through a UI. |
+| [WPPConnect Server CLI](https://github.com/wppconnect-team/server-cli) | Start WPPConnect Server from the `wppserver` command. | Launch the Node.js Server from a terminal. |
+| [WPPConnect Server Go](https://github.com/wppconnect-team/wppconnect-server-go) | Run a browser-free WhatsApp HTTP API built with Go and whatsmeow. | Evaluate a Go HTTP API and documented migration coverage. |
 
-### Troubleshooting
- If you encounter installation issues, please try the procedures below
- . Error Sharp Runtime
-```sh
-    yarn add sharp
-    npm install --include=optional sharp
-    //or
-    yarn add sharp --ignore-engines
-```
+## Support the project
 
-## Run Server
+WPPConnect is maintained by an open-source community. Your support helps fund maintenance, infrastructure, documentation, and the people working on the ecosystem.
 
-```sh
-yarn dev
-```
+If WPPConnect helps your project or business, consider making a one-time contribution or becoming a recurring supporter.
 
-## Build Server
+**[Support WPPConnect on Open Collective](https://opencollective.com/wppconnect)**
+
+Contributions are voluntary. See the official page for current financial information. You can also help with code, tests, documentation, translations and well-described issue reports.
+
+Additional official beneficiaries in [.github/FUNDING.yml](.github/FUNDING.yml): [joaosouz4dev](https://github.com/sponsors/joaosouz4dev), [manfe](https://github.com/sponsors/manfe).
+
+## Contributing
+
+Contributions of code, tests, examples, documentation and translations are welcome. For larger changes, discuss the approach in an issue first. Include the project/runtime versions, a minimal reproduction and sanitized logs when reporting a problem. Update both `README.md` and `README.pt-BR.md` in the same change when installation, configuration, features, examples, licensing or funding changes.
+
+After installing the development dependencies, use the repository checks relevant to your change:
 
 ```sh
 yarn build
+yarn lint
+yarn test
 ```
 
----
+Account-dependent examples and tests require separate validation with an authorized test account. Never attach credentials or session files to an issue.
 
-# Configuration
+## Chatwoot webhook authentication
 
-This server use config.ts file to define some options, default values are:
+`POST /api/:session/chatwoot` requires the token generated for that WPPConnect session. Configure `Authorization: Bearer <session-token>` on the webhook. If the webhook sender cannot set headers, the existing `/api/<session>:<URL-safe-session-token>/chatwoot` URL form is also supported. Generate the URL-safe token by replacing `/` with `_` and `+` with `-` in the session token. Protect such URLs as credentials and redact them from proxy logs.
 
-```javascript
-{
-  /* secret key to generate access token */
-  secretKey: 'THISISMYSECURETOKEN',
-  host: 'http://localhost',
-  port: '21465',
-  // Device name for show on whatsapp device
-  deviceName: 'WppConnect',
-  poweredBy: 'WPPConnect-Server',
-  // starts all sessions when starting the server.
-  startAllSession: true,
-  tokenStoreType: 'file',
-  // sets the maximum global listeners. 0 = infinity.
-  maxListeners: 15,
-  // create userDataDir for each puppeteer instance for working with Multi Device
-  customUserDataDir: './userDataDir/',
-  webhook: {
-    // set default webhook
-    url: null,
-    // automatically downloads files to upload to the webhook
-    autoDownload: true,
-    // enable upload to s3
-    uploadS3: false,
-    // set default bucket name on aws s3
-    awsBucketName: null,
-    //marks messages as read when the webhook returns ok
-    readMessage: true,
-    //sends all unread messages to the webhook when the server starts
-    allUnreadOnStart: false,
-    // send all events of message status (read, sent, etc)
-    listenAcks: true,
-    // send all events of contacts online or offline for webook and socket
-    onPresenceChanged: true,
-    // send all events of groups participants changed for webook and socket
-    onParticipantsChanged: true,
-    // send all events of reacted messages for webook and socket
-    onReactionMessage: true,
-    // send all events of poll messages for webook and socket
-    onPollResponse: true,
-    // send all events of revoked messages for webook and socket
-    onRevokedMessage: true,
-    // send all events of labels for webook and socket
-    onLabelUpdated: true,
-    // 'event', 'from' or 'type' to ignore and not send to webhook
-    ignore: [],
-  },
-  websocket: {
-    // Just leave one active, here or on webhook.autoDownload
-    autoDownload: false,
-    // Just leave one active, here or on webhook.uploadS3, to avoid duplication in S3
-    uploadS3: false,
-  },
-  // send data to chatwoot
-  chatwoot: {
-    sendQrCode: true,
-    sendStatus: true,
-  },
-  //functionality that archives conversations, runs when the server starts
-  archive: {
-    enable: false,
-    //maximum interval between filings.
-    waitTime: 10,
-    daysToArchive: 45,
-  },
-  log: {
-    level: 'silly', // Before open a issue, change level to silly and retry an action
-    logger: ['console', 'file'],
-  },
-  // create options for using on wppconnect-lib
-  createOptions: {
-    browserArgs: [
-      '--disable-web-security',
-      '--no-sandbox',
-      '--disable-web-security',
-      '--aggressive-cache-discard',
-      '--disable-cache',
-      '--disable-application-cache',
-      '--disable-offline-load-stale-cache',
-      '--disk-cache-size=0',
-      '--disable-background-networking',
-      '--disable-default-apps',
-      '--disable-extensions',
-      '--disable-sync',
-      '--disable-translate',
-      '--hide-scrollbars',
-      '--metrics-recording-only',
-      '--mute-audio',
-      '--no-first-run',
-      '--safebrowsing-disable-auto-update',
-      '--ignore-certificate-errors',
-      '--ignore-ssl-errors',
-      '--ignore-certificate-errors-spki-list',
-      '--disable-features=LeakyPeeker' // Disable the browser's sleep mode when idle, preventing the browser from going into sleep mode, this is useful for WhatsApp not to be in economy mode in the background, avoiding possible crashes
-    ],
-  },
-  mapper: {
-    enable: false,
-    prefix: 'tagone-',
-  },
-  // Configurations for connect with database
-  db: {
-    mongodbDatabase: 'tokens',
-    mongodbCollection: '',
-    mongodbUser: '',
-    mongodbPassword: '',
-    mongodbHost: '',
-    mongoIsRemote: true,
-    mongoURLRemote: '',
-    mongodbPort: 27017,
-    redisHost: 'localhost',
-    redisPort: 6379,
-    redisPassword: '',
-    redisDb: 0,
-    redisPrefix: 'docker',
-  },
-  // Your configurations to upload on AWS
-  aws_s3: {
-    region: 'sa-east-1',
-    access_key_id: '',
-    secret_key: '',
-    // If you already have a bucket created that will be used. Will be stored: you-default-bucket/{session}/{filename}
-    defaultBucketName: ''
-  },
-}
-```
+The Chatwoot `api_access_token` is an outbound Chatwoot credential and does not authorize this endpoint. Requests without a matching WPPConnect session token return 401 before accessing a client; authenticated requests for an unavailable session return 409. Only public outgoing `message_created` events are sent to WhatsApp.
 
-# Secret Key
+## Community and support
 
-Your `secretKey` is inside the `config.ts` file. You must change the default value to one that only you know.
+Use [repository issues](https://github.com/wppconnect-team/wppconnect-server/issues) for reproducible bugs and feature proposals. For usage questions, join the community through the official channels:
 
-<!-- ![Peek 2021-03-25 09-33](https://user-images.githubusercontent.com/40338524/112473515-3b310a80-8d4d-11eb-94bb-ff409c91d9b8.gif) -->
+- [Discord](https://discord.gg/JU5JGGKGNG)
+- [Telegram](https://t.me/wppconnect)
+- [YouTube](https://www.youtube.com/c/wppconnect)
 
-# Generate Token
+This project is independent and is not affiliated with or endorsed by WhatsApp or Meta. Follow applicable terms and obtain authorization for account and messaging operations.
 
-To generate an access token, you must use your `SECRET_KEY`.
+## License
 
-Using the route:
+[Apache License 2.0 (Apache-2.0)](./LICENSE).
 
-```shell
-  curl -X POST --location "http://localhost:21465/api/mySession/THISISMYSECURETOKEN/generate-token"
-```
+Copyright 2021 WPPConnect Team.
 
-### Response:
-
-```json
-{
-  "status": "Success",
-  "session": "mySession",
-  "token": "$2b$10$duQ5YYV6fojn5qFiFv.aEuY32_SnHgcmxdfxohnjG4EHJ5_Z6QWhe",
-  "full": "wppconnect:$2b$10$duQ5YYV6fojn5qFiFv.aEuY32_SnHgcmxdfxohnjG4EHJ5_Z6QWhe"
-}
-```
-
-# Using Token
-
-Save the value of the "full" response. Then use this value to call the routes.
-
-# Examples
-
-```sh
-#Starting Session
-# /api/:session/start-session
-
-curl -X POST --location "http://localhost:21465/api/mySession/start-session" \
-    -H "Accept: application/json" \
-    -H "Content-Type: application/json" \
-    -H "Authorization: Bearer \$2b\$10\$JcHd97xHN6ErBuiLd7Yu4.r6McvOvEZZDQTQwev2MRK_zQObUZZ9C"
-```
-
-```sh
-#Get QrCode
-# /api/:session/start-session
-# when the session is starting if the method is called again it will return the base64 qrCode
-
-curl -X POST --location "http://localhost:21465/api/mySession/start-session" \
-    -H "Accept: application/json" \
-    -H "Content-Type: application/json" \
-    -H "Authorization: Bearer \$2b\$10\$JcHd97xHN6ErBuiLd7Yu4.r6McvOvEZZDQTQwev2MRK_zQObUZZ9C"
-```
-
-```sh
-#Send Message
-# /api/:session/send-message
-curl -X POST --location "http://localhost:21465/api/mySession/send-message" \
-    -H "Content-Type: application/json; charset=utf-8" \
-    -H "Accept: application/json" \
-    -H "Authorization: Bearer \$2b\$10\$8aQFQxnWREtBEMZK_iHMe.u7NeoNkjL7s6NYai_83Pb31Ycss6Igm" \
-    -d "{
-          \"phone\": \"5511900000000\",
-          \"message\": \"*Abner* Rodrigues\"
-        }"
-```
-
-See the `routes` file for all the routes. [here](/src/routes/index.js) and HTTP [file](/requests.http).
-
-# Swagger UI
-
-Swagger ui can be found at `/api-docs`
+The original legal document and existing copyright notices are preserved. Third-party components retain their own terms.
