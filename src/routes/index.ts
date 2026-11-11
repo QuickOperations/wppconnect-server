@@ -44,10 +44,12 @@ const routes: Router = Router();
 routes.post('/api/:session/:secretkey/generate-token', encryptSession);
 
 // All Sessions
-routes.get(
-  '/api/:secretkey/show-all-sessions',
-  SessionController.showAllSessions
+routes.get('/api/:secretkey/show-all-sessions', (_req, res) =>
+  res.status(410).json({
+    message: 'Use POST /api/show-all-sessions with the x-secret-key header.',
+  })
 );
+routes.post('/api/show-all-sessions', SessionController.showAllSessions);
 routes.post('/api/:secretkey/start-all', SessionController.startAllSessions);
 
 // Sessions
@@ -79,7 +81,6 @@ routes.post(
 routes.post(
   '/api/:session/logout-session',
   verifyToken,
-  statusConnection,
   SessionController.logOutSession
 );
 routes.post(
@@ -870,7 +871,12 @@ routes.get(
   statusConnection,
   OrderController.getOrderbyMsg
 );
-routes.get('/api/:secretkey/backup-sessions', MiscController.backupAllSessions);
+routes.get('/api/:secretkey/backup-sessions', (_req, res) =>
+  res.status(410).json({
+    message: 'Use POST /api/backup-sessions with the x-secret-key header.',
+  })
+);
+routes.post('/api/backup-sessions', MiscController.backupAllSessions);
 routes.post(
   '/api/:secretkey/restore-sessions',
   upload.single('file'),
@@ -953,7 +959,7 @@ routes.post(
   NewsletterController.muteNewsletter
 );
 
-routes.post('/api/:session/chatwoot', DeviceController.chatWoot);
+routes.post('/api/:session/chatwoot', verifyToken, DeviceController.chatWoot);
 
 // Api Doc
 routes.use('/api-docs', swaggerUi.serve as any);

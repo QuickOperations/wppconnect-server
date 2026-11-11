@@ -24,3 +24,9 @@ backupFolder
 tokens/*
 wppconnect_tokens/*
 .claude/
+.env
+.env.*
+!.env.example
+!vendor/deepmerge-4.3.2+wppconnect.1.tgz
+
+!vendor/wppconnect-minimatch-legacy-compat-*.tgz

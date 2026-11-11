@@ -14,6 +14,15 @@ const ROOT = '/usr/src/wpp-server';
 /** Read the Chrome buildId that our puppeteer-core was built for */
 function getChromeBuildId() {
   const attempts = [
+    // puppeteer-core >=25 (ESM only) — stored in lib/puppeteer/revisions.js
+    () => {
+      const text = fs.readFileSync(
+        path.join(ROOT, 'node_modules/puppeteer-core/lib/puppeteer/revisions.js'),
+        'utf8'
+      );
+      const match = text.match(/chrome:\s*['"]([^'"]+)['"]/);
+      return match && match[1];
+    },
     // puppeteer-core >=21 — stored in revisions.js
     () => {
       const { PUPPETEER_REVISIONS } = require(path.join(

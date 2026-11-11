@@ -17,7 +17,6 @@ import { Chat } from '@wppconnect-team/wppconnect';
 import { Request, Response } from 'express';
 
 import { contactToArray, unlinkAsync } from '../util/functions';
-import { clientsArray } from '../util/sessionUtil';
 
 function returnSucess(res: any, session: any, phone: any, data: any) {
   res.status(201).json({
@@ -167,6 +166,10 @@ export async function listChats(req: Request, res: Response) {
               direction: { type: "string" },
               onlyGroups: { type: "boolean" },
               onlyUsers: { type: "boolean" },
+              onlyNewsletter: { type: "boolean" },
+              onlyCommunities: { type: "boolean" },
+              onlyArchived: { type: "boolean" },
+              ignoreGroupMetadata: { type: "boolean" },
               onlyWithUnreadMessage: { type: "boolean" },
               withLabels: { type: "array" },
             }
@@ -216,6 +219,10 @@ export async function listChats(req: Request, res: Response) {
       direction,
       onlyGroups,
       onlyUsers,
+      onlyNewsletter,
+      onlyCommunities,
+      onlyArchived,
+      ignoreGroupMetadata,
       onlyWithUnreadMessage,
       withLabels,
     } = req.body;
@@ -226,6 +233,10 @@ export async function listChats(req: Request, res: Response) {
       direction: direction,
       onlyGroups: onlyGroups,
       onlyUsers: onlyUsers,
+      onlyNewsletter: onlyNewsletter,
+      onlyCommunities: onlyCommunities,
+      onlyArchived: onlyArchived,
+      ignoreGroupMetadata: ignoreGroupMetadata,
       onlyWithUnreadMessage: onlyWithUnreadMessage,
       withLabels: withLabels,
     });
@@ -377,21 +388,24 @@ export async function getChatById(req: Request, res: Response) {
       schema: 'NERDWHATS_AMERICA'
      }
      #swagger.parameters["phone"] = {
-      schema: '5521999999999'
+      schema: '5521999999999@c.us'
      }
      #swagger.parameters["isGroup"] = {
       schema: 'false'
      }
    */
   const { phone } = req.params;
-  const { isGroup } = req.query;
+  const { isGroup = false, isNewsletter = false, isLid = false } = req.query;
 
   try {
     let result = {} as Chat;
-    if (isGroup) {
-      result = await req.client.getChatById(`${phone}@g.us`);
-    } else {
-      result = await req.client.getChatById(`${phone}@c.us`);
+    for (const contato of contactToArray(
+      phone as string,
+      isGroup as boolean,
+      isNewsletter as boolean,
+      isLid as boolean
+    )) {
+      result = await req.client.getChatById(contato);
     }
 
     res.status(200).json(result);
@@ -1003,15 +1017,14 @@ export async function forwardMessages(req: Request, res: Response) {
   const { phone, messageId, isGroup = false } = req.body;
 
   try {
+    const contacts = contactToArray(phone, isGroup);
     let response;
 
-    if (!isGroup) {
-      response = await req.client.forwardMessagesV2(`${phone[0]}`, messageId);
-    } else {
-      response = await req.client.forwardMessagesV2(`${phone[0]}`, messageId);
+    for (const contact of contacts) {
+      response = await req.client.forwardMessagesV2(contact, messageId);
     }
 
-    res.status(201).json({ status: 'success', response: response });
+    res.status(201).json({ status: 'success', response });
   } catch (e) {
     req.logger.error(e);
     res
@@ -2246,68 +2259,72 @@ export async function chatWoot(req: Request, res: Response): Promise<any> {
       }
      }
    */
-  const { session } = req.params;
-  const client: any = clientsArray[session];
-  if (client == null || client.status !== 'CONNECTED') return;
+  const client: any = req.client;
+  if (!client || client.status !== 'CONNECTED')
+    return res
+      .status(409)
+      .json({ status: 'error', message: 'Session is not connected' });
   try {
-    if (await client.isConnected()) {
-      const event = req.body.event;
-      const is_private = req.body.private || req.body.is_private;
+    if (!(await client.isConnected()))
+      return res
+        .status(409)
+        .json({ status: 'error', message: 'Session is not connected' });
+    const event = req.body.event;
+    const is_private = req.body.private || req.body.is_private;
 
-      if (
-        event == 'conversation_status_changed' ||
-        event == 'conversation_resolved' ||
-        is_private
-      ) {
-        return res
-          .status(200)
-          .json({ status: 'success', message: 'Success on receive chatwoot' });
-      }
+    if (
+      event == 'conversation_status_changed' ||
+      event == 'conversation_resolved' ||
+      is_private
+    ) {
+      return res
+        .status(200)
+        .json({ status: 'success', message: 'Success on receive chatwoot' });
+    }
 
-      const {
-        message_type,
-        phone = req.body.conversation.meta.sender.phone_number.replace('+', ''),
-        message = req.body.conversation.messages[0],
-      } = req.body;
+    const {
+      message_type,
+      phone = req.body.conversation.meta.sender.phone_number.replace('+', ''),
+      message = req.body.conversation.messages[0],
+    } = req.body;
 
-      if (event != 'message_created' && message_type != 'outgoing')
-        return res
-          .status(200)
-          .json({ status: 'success', message: 'Success on receive chatwoot' });
-      for (const contato of contactToArray(phone, false)) {
-        if (message_type == 'outgoing') {
-          if (message.attachments) {
-            const base_url = `${
-              client.config.chatWoot.baseURL
-            }/${message.attachments[0].data_url.substring(
-              message.attachments[0].data_url.indexOf('/rails/') + 1
-            )}`;
+    if (event !== 'message_created' || message_type !== 'outgoing')
+      return res
+        .status(200)
+        .json({ status: 'success', message: 'Success on receive chatwoot' });
+    for (const contato of contactToArray(phone, false)) {
+      if (message_type == 'outgoing') {
+        if (message.attachments) {
+          const base_url = `${
+            client.config.chatWoot.baseURL
+          }/${message.attachments[0].data_url.substring(
+            message.attachments[0].data_url.indexOf('/rails/') + 1
+          )}`;
 
-            // Check if attachments is Push-to-talk and send this
-            if (message.attachments[0].file_type === 'audio') {
-              await client.sendPtt(
-                `${contato}`,
-                base_url,
-                'Voice Audio',
-                message.content
-              );
-            } else {
-              await client.sendFile(
-                `${contato}`,
-                base_url,
-                'file',
-                message.content
-              );
-            }
+          // Check if attachments is Push-to-talk and send this
+          if (message.attachments[0].file_type === 'audio') {
+            await client.sendPtt(
+              `${contato}`,
+              base_url,
+              'Voice Audio',
+              message.content
+            );
           } else {
-            await client.sendText(contato, message.content);
+            await client.sendFile(
+              `${contato}`,
+              base_url,
+              'file',
+              message.content
+            );
           }
+        } else {
+          await client.sendText(contato, message.content);
         }
       }
-      res
-        .status(200)
-        .json({ status: 'success', message: 'Success on  receive chatwoot' });
     }
+    res
+      .status(200)
+      .json({ status: 'success', message: 'Success on  receive chatwoot' });
   } catch (e) {
     console.log(e);
     res.status(400).json({

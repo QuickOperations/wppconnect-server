@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import './security/runtime';
+
 import { defaultLogger } from '@wppconnect-team/wppconnect';
 import cors from 'cors';
 import express, { Express, NextFunction, Router } from 'express';
@@ -26,6 +28,9 @@ import { Logger } from 'winston';
 
 import { version } from '../package.json';
 import config from './config';
+import { managerRoutes } from './manager/routes';
+import { installManagerSocket } from './manager/socket';
+import { installManagerStatic } from './manager/static';
 import { convert } from './mapper/index';
 import routes from './routes';
 import { ServerOptions } from './types/ServerOptions';
@@ -35,8 +40,6 @@ import {
   startAllSessions,
 } from './util/functions';
 import { createLogger } from './util/logger';
-
-//require('dotenv').config();
 
 export const logger = createLogger(config.log);
 
@@ -62,7 +65,6 @@ export function initServer(serverOptions: Partial<ServerOptions>): {
   app.use(cors());
   app.use(express.json({ limit: '50mb' }));
   app.use(express.urlencoded({ limit: '50mb', extended: true }));
-  app.use('/files', express.static('WhatsAppImages'));
   app.use(boolParser());
 
   if (config?.aws_s3?.access_key_id && config?.aws_s3?.secret_key) {
@@ -98,6 +100,8 @@ export function initServer(serverOptions: Partial<ServerOptions>): {
     next();
   });
 
+  app.use('/api/manager', managerRoutes);
+  installManagerStatic(app);
   app.use(routes);
 
   createFolders();
@@ -108,6 +112,7 @@ export function initServer(serverOptions: Partial<ServerOptions>): {
     },
   });
 
+  installManagerSocket(io, serverOptions.secretKey!);
   io.on('connection', (sock) => {
     logger.info(`ID: ${sock.id} entrou`);
 

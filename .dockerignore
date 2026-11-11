@@ -2,6 +2,8 @@
 .github
 .husky
 *.tgz
+!vendor/deepmerge-4.3.2+wppconnect.1.tgz
+!vendor/wppconnect-minimatch-legacy-compat-*.tgz
 dist
 log
 node_modules
@@ -12,3 +14,7 @@ tokens
 .env.*
 userDataDir
 wppconnect_tokens
+graphify-out
+manager
+
+!.env.example

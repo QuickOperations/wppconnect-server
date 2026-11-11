@@ -1,3 +1,5 @@
+import dotenv from 'dotenv';
+
 import { ServerOptions } from './types/ServerOptions';
 import { environment } from './environment';
 
@@ -15,6 +17,7 @@ export default {
   customUserDataDir: env.USER_DATA_DIR || './userDataDir/',
   webhook: {
     url: env.WEBHOOK_URL || null,
+    allowedUrls: env.WEBHOOK_ALLOWED_URLS,
     autoDownload: false,
     uploadS3: false,
     readMessage: false,
@@ -36,6 +39,7 @@ export default {
   },
 
   chatwoot: {
+    allowedUrls: env.CHATWOOT_ALLOWED_URLS,
     sendQrCode: true,
     sendStatus: true,
   },

@@ -13,6 +13,7 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV NODE_ENV=production
 
 COPY .yarnrc.yml package.json yarn.lock ./
+COPY vendor ./vendor
 RUN corepack enable && \
     corepack prepare yarn@4.14.1 --activate && \
     yarn install --immutable
