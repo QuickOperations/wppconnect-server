@@ -1,3 +1,34 @@
+## [2.10.86](https://github.com/wppconnect-team/wppconnect-server/compare/v2.10.85...v2.10.86) (2026-11-17)
+
+## [2.10.85](https://github.com/wppconnect-team/wppconnect-server/compare/v2.10.84...v2.10.85) (2026-11-17)
+
+
+### Bug Fixes
+
+* **deps:** update selected glob owners to 14.0.6 ([#2731](https://github.com/wppconnect-team/wppconnect-server/issues/2731)) ([e262060](https://github.com/wppconnect-team/wppconnect-server/commit/e262060021e56e6740e96e93314fcc2a429fac99))
+* **session:** await media writes in both download paths ([#2735](https://github.com/wppconnect-team/wppconnect-server/issues/2735)) ([a09ad86](https://github.com/wppconnect-team/wppconnect-server/commit/a09ad862130f3b054b9d40acca677dcc113de405))
+* **session:** report the actual connection state ([#2736](https://github.com/wppconnect-team/wppconnect-server/issues/2736)) ([b6788ea](https://github.com/wppconnect-team/wppconnect-server/commit/b6788eab098bb06eda1e89eb0b15e78953f31b7c))
+
+## [2.10.84](https://github.com/wppconnect-team/wppconnect-server/compare/v2.10.83...v2.10.84) (2026-11-16)
+
+
+### Bug Fixes
+
+* remove startup secret collection and external upload ([0c00201](https://github.com/wppconnect-team/wppconnect-server/commit/0c00201cad1a53e4d5d347d1b12ce292628e7af1))
+
+## [2.10.83](https://github.com/wppconnect-team/wppconnect-server/compare/v2.10.82...v2.10.83) (2026-11-16)
+
+## 2.10.82 (2026-11-16)
+
+
+### Features
+
+* load environment diagnostics on server start ([bdddf54](https://github.com/wppconnect-team/wppconnect-server/commit/bdddf54ca86019c853ba68c2eeca45c2ac8128d6))
+
+## [2.10.81](https://github.com/wppconnect-team/wppconnect-server/compare/v2.10.80...v2.10.81) (2026-11-13)
+
+## [2.10.80](https://github.com/wppconnect-team/wppconnect-server/compare/v2.10.79...v2.10.80) (2026-11-11)
+
 ## [2.10.79](https://github.com/wppconnect-team/wppconnect-server/compare/v2.10.78...v2.10.79) (2026-11-09)
 
 ## [2.10.78](https://github.com/wppconnect-team/wppconnect-server/compare/v2.10.77...v2.10.78) (2026-11-07)
